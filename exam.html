@@ -1,0 +1,343 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Final Exam System</title>
+
+<link rel="icon" type="image/png" href="mes_logo.png">
+
+<style>
+
+/* ✅ LOGO CENTER */
+img {
+    display: block;
+    margin: auto;
+}
+
+/* ✅ BODY DESIGN */
+body {
+    background-color: #f2f2f2;
+    font-family: Arial;
+}
+
+/* ✅ LOGIN CENTER BOX */
+#loginPage {
+    width: 800px;
+    margin: 100px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+/* ✅ EXAM CENTER BOX */
+#examPage {
+    width: 1000px;
+    margin: 5px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+</style>
+
+</head>
+
+    
+<body>
+
+<!-- LOGIN -->
+<div id="loginPage">
+
+<img src="mes_logo.png" width="300">
+<h2>MES System Login</h2>
+Employee No:
+<input id="empnoLogin"><br><br>
+<button onclick="login()">Login</button>
+</div>
+
+<!-- EXAM -->
+<div id="examPage" style="display:none;">
+<img src="mes_logo.png" width="300"><br>
+<h2>📋 Product Technology ONLINE EXAM SYSTEM</h2>
+
+<h3 id="timer">Time Left: 01:00</h3>
+
+<h3 id="result"></h3>
+
+EmpNo: <input id="empno" readonly><br><br>
+Name: <input id="fullname" readonly><br><br>
+
+<form>
+
+<p>1. QA?</p>
+<input type="radio" name="q1" value="A"> Quality Analysis<br>
+<input type="radio" name="q1" value="B"> Quality Assurance<br><br>
+
+<p>2. Tool?</p>
+<input type="radio" name="q2" value="A"> Excel<br>
+<input type="radio" name="q2" value="B"> Paint<br><br>
+
+<p>3. SOP?</p>
+<input type="radio" name="q3" value="A"> Standard Operating Procedure<br>
+<input type="radio" name="q3" value="B"> System Output Plan<br><br>
+
+</form>
+
+<div style="margin-top:15px;">
+<button onclick="submitExam()">Submit</button>
+<button onclick="viewResult()">View Result</button>
+<button onclick="viewRanking()">View Ranking 🏆</button>
+</div>
+
+</div>
+
+<!-- RANKING -->
+<div id="rankingPage" style="display:none;">
+<h2>🏆 Ranking</h2>
+<table border="1" id="rankingTable">
+<tr>
+<th>Rank</th>
+<th>EmpNo</th>
+<th>Name</th>
+<th>Score</th>
+<th>%</th>
+<th>Attempt</th>
+<th>Remarks</th>
+<th>Date</th>
+</tr>
+</table>
+</div>
+
+<script>
+
+
+// ✅ TIMER SETTINGS
+let time = 60;
+let warningGiven = false;
+
+function startTimer() {
+
+    let timerInterval = setInterval(() => {
+
+        let minutes = Math.floor(time / 60);
+        let seconds = time % 60;
+
+        let display =
+            (minutes < 10 ? "0" + minutes : minutes) + ":" +
+            (seconds < 10 ? "0" + seconds : seconds);
+
+        document.getElementById("timer").innerText = "Time Left: " + display;
+
+        // 🔴 RED TIMER
+        if (time <= 10) {
+            document.getElementById("timer").style.color = "red";
+        }
+
+        // ⚠️ WARNING
+        if (time === 10 && !warningGiven) {
+            alert("⚠️ Warning: 10 seconds left!");
+            warningGiven = true;
+        }
+
+        time--;
+
+        // ⏰ AUTO SUBMIT
+        if (time < 0) {
+            clearInterval(timerInterval);
+            alert("⏰ Time is up! Auto submitting your exam...");
+           submitExam();
+        }
+
+    }, 1000);
+}
+
+// USERS
+let users = [
+    { empno: "18988", fullname: "Gelyn Diona" },
+    { empno: "22092", fullname: "Joan Zaldivia" },
+    { empno: "28178", fullname: "Ivan Paul Liwag" },
+    { empno: "25692", fullname: "Jessica Asay" },
+    { empno: "20231", fullname: "Lielani Marquez" }
+
+];
+
+// ✅ LOGIN
+function login() {
+    let empInput = document.getElementById("empnoLogin").value;
+
+    let foundUser = users.find(u =>
+        u.empno.trim() === empInput.trim()
+    );
+
+    if (foundUser) {
+        document.getElementById("loginPage").style.display = "none";
+        document.getElementById("examPage").style.display = "block";
+
+        document.getElementById("fullname").value = foundUser.fullname;
+        document.getElementById("empno").value = foundUser.empno;
+
+        startTimer(); // ✅ START TIMER
+    } else {
+        alert("Employee not found!");
+    }
+}
+
+// ✅ SUBMIT (FINAL SAFE VERSION)
+function submitExam(){
+
+let q1=document.querySelector('input[name="q1"]:checked')?.value || "";
+let q2=document.querySelector('input[name="q2"]:checked')?.value || "";
+let q3=document.querySelector('input[name="q3"]:checked')?.value || "";
+
+let score=0;
+if(q1==="B") score++;
+if(q2==="A") score++;
+if(q3==="A") score++;
+
+let percent=(score/3)*100;
+let status=percent>=75?"PASSED ✅":"FAILED ❌";
+
+let empno=document.getElementById("empno").value;
+let name=document.getElementById("fullname").value;
+
+let list=JSON.parse(localStorage.getItem("data"))||[];
+
+// ✅ GET USER ATTEMPTS
+let userAttempts=list.filter(x=>x.empno===empno);
+
+// ✅ LIMIT 3 ATTEMPTS + 24H RESET
+if(userAttempts.length>=3){
+
+let last=userAttempts[userAttempts.length-1];
+
+let now=new Date();
+let lastDate=new Date(last.date);
+
+let diff=(now-lastDate)/(1000*60*60);
+
+if(diff<24){
+alert("⛔ Max 3 attempts. Try after 24 hours.");
+return;
+}else{
+list=list.filter(x=>x.empno!==empno);
+}
+}
+
+// ✅ ATTEMPT COUNT
+let count=list.filter(x=>x.empno===empno).length+1;
+
+let attempt="";
+if(count===1) attempt="First Take";
+else if(count===2) attempt="Second Take";
+else attempt="Third Take";
+
+// ✅ SAVE
+let now = new Date();
+let formattedDate = now.toLocaleString();
+
+list.push({
+empno,name,score,
+percent:percent.toFixed(2),
+status,attempt,
+q1,q2,q3,
+date: formattedDate
+});
+
+localStorage.setItem("data",JSON.stringify(list));
+
+// ✅ SHOW RESULT
+document.getElementById("result").innerHTML=
+"Score: "+score+"/3<br>"+
+"Percentage: "+percent.toFixed(2)+"%<br>"+
+"Status: "+status;
+
+alert("✅ Saved!");
+}
+
+// ✅ VIEW RESULT (WITH QUESTIONNAIRE)
+function viewResult(){
+
+let empno=document.getElementById("empno").value;
+let list=JSON.parse(localStorage.getItem("data"))||[];
+
+let r=list.filter(x=>x.empno===empno).pop();
+
+if(!r){
+alert("No result!");
+return;
+}
+
+let q1a=r.q1==="A"?"(✓) Quality Analysis":"( ) Quality Analysis";
+let q1b=r.q1==="B"?"(✓) Quality Assurance":"( ) Quality Assurance";
+
+let q2a=r.q2==="A"?"(✓) Excel":"( ) Excel";
+let q2b=r.q2==="B"?"(✓) Paint":"( ) Paint";
+
+let q3a=r.q3==="A"?"(✓) SOP":"( ) SOP";
+let q3b=r.q3==="B"?"(✓) System Output Plan":"( ) System Output Plan";
+
+let content=
+"Employee No,"+r.empno+"\n"+
+"Name,"+r.name+"\n"+
+"Score,'"+r.score+"/3\n"+
+"Percent,"+r.percent+"%\n"+
+"Status,"+r.status+"\n\n"+
+"1. QA\n"+q1a+"\n"+q1b+"\n\n"+
+"2. Tool\n"+q2a+"\n"+q2b+"\n\n"+
+"3. SOP\n"+q3a+"\n"+q3b;
+
+let blob=new Blob(["\uFEFF"+content]);
+let url=URL.createObjectURL(blob);
+
+let a=document.createElement("a");
+a.href=url;
+a.download="Result.csv";
+a.click();
+}
+
+// ✅ RANKING
+function viewRanking(){
+
+let list=JSON.parse(localStorage.getItem("data"))||[];
+
+if(list.length===0){
+alert("No data!");
+return;
+}
+
+let t=document.getElementById("rankingTable");
+
+t.innerHTML=
+"<tr><th>Rank</th><th>EmpNo</th><th>Name</th><th>Score</th><th>%</th><th>Attempt</th><th>Status</th><th>Date</th></tr>";
+list.sort((a,b)=>b.score-a.score);
+
+list.forEach((r,i)=>{
+let row=t.insertRow();
+
+row.insertCell(0).innerText=i+1;
+row.insertCell(1).innerText=r.empno;
+row.insertCell(2).innerText=r.name;
+row.insertCell(3).innerText=r.score+"/3";
+row.insertCell(4).innerText=r.percent+"%";
+row.insertCell(5).innerText=r.attempt;
+row.insertCell(6).innerText=r.status;
+row.insertCell(7).innerText = r.date;
+});
+
+document.getElementById("examPage").style.display="none";
+document.getElementById("rankingPage").style.display="block";
+}
+
+// BACK
+function back(){
+document.getElementById("rankingPage").style.display="none";
+document.getElementById("examPage").style.display="block";
+}
+
+</script>
+
+</body>
+</html>
