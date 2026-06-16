@@ -41,6 +41,60 @@ body {
     box-shadow: 0 0 10px rgba(0,0,0,0.2);
 }
 
+.info-box {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+}
+
+.info-box label {
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+}
+
+.info-box input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+}
+
+button {
+    padding: 10px 15px;
+    margin: 10px 5px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;	
+}
+
+/* Submit */
+button:nth-of-type(1) {
+    background-color: #4CAF50;
+    color: white;
+}
+
+
+/* Result */
+button:nth-of-type(2) {
+    background-color: #2196F3;
+    color: white;
+}
+
+/* ✅ Hover effect */
+button:hover {
+    opacity: 0.8;
+}
+
+/* Ranking */
+button:nth-of-type(3) {
+    background-color: orange;
+    color: white;
+}
+
+
 </style>
 
 </head>
@@ -49,47 +103,86 @@ body {
 <body>
 
 <!-- LOGIN -->
+
 <div id="loginPage">
 
-<img src="mes_logo.png" width="300">
-<h2>MES System Login</h2>
-Employee No:
-<input id="empnoLogin"><br><br>
-<button onclick="login()">Login</button>
+    <img src="mes_logo.png" width="300">
+    <h2>MES System Login</h2>
+
+    Employee No:
+    <input id="empnoLogin"><br><br>
+
+    <button onclick="login()">Login</button>
+    <button onclick="openRanking()">View Ranking 🏆</button>
+
 </div>
 
 <!-- EXAM -->
 <div id="examPage" style="display:none;">
 <img src="mes_logo.png" width="300"><br>
-<h2>📋 Product Technology ONLINE EXAM SYSTEM</h2>
+<h2 style="text-align:center;">
+📋 Product Technology ONLINE EXAM SYSTEM
+</h2>
 
 <h3 id="timer">Time Left: 01:00</h3>
 
 <h3 id="result"></h3>
 
-EmpNo: <input id="empno" readonly><br><br>
-Name: <input id="fullname" readonly><br><br>
+<div class="info-box">
+
+<h3>👤 Employee Information</h3>
+
+<label>🆔 Employee No</label>
+<input id="empno" readonly>
+
+<label>👤 Full Name</label>
+<input id="fullname" readonly>
+
+</div>
+
+
 
 <form>
 
-<p>1. QA?</p>
-<input type="radio" name="q1" value="A"> Quality Analysis<br>
-<input type="radio" name="q1" value="B"> Quality Assurance<br><br>
+<p>1. What is the meaning of PEEC?</p>
+<input type="radio" name="q1" value="A"> Process Engineering Evaluation & Control<br>
+<input type="radio" name="q1" value="B"> Product Engineering and External Communication<br><br>
+<input type="radio" name="q1" value="C"> Process Engineering and Efficiency Communication<br><br><br>
+<input type="radio" name="q1" value="D"> Process Engineering and External Communication<br><br><br><br>
 
-<p>2. Tool?</p>
-<input type="radio" name="q2" value="A"> Excel<br>
-<input type="radio" name="q2" value="B"> Paint<br><br>
+<p>2. What does KPI stand for?</p>
+<input type="radio" name="q2" value="A"> Key Performance Indicator<br>
+<input type="radio" name="q2" value="B"> Key Process Indicator<br><br>
+<input type="radio" name="q2" value="C"> Key Productivity Indicator<br><br><br>
+<input type="radio" name="q2" value="D"> Key Performance Index<br><br><br><br>
 
-<p>3. SOP?</p>
-<input type="radio" name="q3" value="A"> Standard Operating Procedure<br>
-<input type="radio" name="q3" value="B"> System Output Plan<br><br>
+<p>3. What does MBG mean?</p>
+<input type="radio" name="q3" value="A"> Magnetics Business Group<br>
+<input type="radio" name="q3" value="B"> Manufacturing Business Group <br><br>
+<input type="radio" name="q3" value="C"> Management Business Group <br><br><br>
+<input type="radio" name="q3" value="D"> Marketing Business Group <br><br><br><br>
+
+
+<p>4. What is the full meaning of PCN?</p>
+<input type="radio" name="q4" value="A"> Process Change Notice<br>
+<input type="radio" name="q4" value="B"> Product Change Notice<br><br>
+<input type="radio" name="q4" value="B"> Process Control Notice<br><br><br>
+<input type="radio" name="q4" value="B"> Production Control Notice<br><br><br><br>
+
+<p>5. Ano ang tunay na meaning ng “urgent”?</p>
+<input type="radio" name="q5" value="A"> ASAP<br>
+<input type="radio" name="q5" value="B"> Today<br><br>
+<input type="radio" name="q5" value="C"> Kahapon pa dapat<br><br><br>
+<input type="radio" name="q5" value="D"> Depende sa mood ni Sir Clark<br><br><br><br>
+
 
 </form>
 
 <div style="margin-top:15px;">
-<button onclick="submitExam()">Submit</button>
+<button type="button" onclick="submitExam()">Submit</button>
 <button onclick="viewResult()">View Result</button>
-<button onclick="viewRanking()">View Ranking 🏆</button>
+<button onclick="retakeExam()">Retake 🔄</button>
+<button onclick="logout()">Logout ❌</button>
 </div>
 
 </div>
@@ -109,18 +202,27 @@ Name: <input id="fullname" readonly><br><br>
 <th>Date</th>
 </tr>
 </table>
+<br>
+<button onclick="back()">🔙 Back</button>
+<button onclick="resetRanking()" style="background:red;color:white;">
+🗑 Reset Ranking
+</button>
+
+
 </div>
+
 
 <script>
 
+let logoutTimer;
+let timerInterval;
 
-// ✅ TIMER SETTINGS
 let time = 60;
 let warningGiven = false;
 
 function startTimer() {
 
-    let timerInterval = setInterval(() => {
+        timerInterval = setInterval(() => {
 
         let minutes = Math.floor(time / 60);
         let seconds = time % 60;
@@ -160,12 +262,24 @@ let users = [
     { empno: "22092", fullname: "Joan Zaldivia" },
     { empno: "28178", fullname: "Ivan Paul Liwag" },
     { empno: "25692", fullname: "Jessica Asay" },
+    { empno: "18700", fullname: "Aileen Figuracion" },
+    { empno: "16511", fullname: "Cherry Parayno" },
+    { empno: "27782", fullname: "Kyle Philip Holanda" },
+    { empno: "24958", fullname: "Jayson Gabriel Mapola" },
+    { empno: "22698", fullname: "Clark Kenneth Buban" },
     { empno: "20231", fullname: "Lielani Marquez" }
 
 ];
 
 // ✅ LOGIN
+
+
+
 function login() {
+
+    clearTimeout(logoutTimer);
+    clearInterval(timerInterval);
+
     let empInput = document.getElementById("empnoLogin").value;
 
     let foundUser = users.find(u =>
@@ -179,82 +293,154 @@ function login() {
         document.getElementById("fullname").value = foundUser.fullname;
         document.getElementById("empno").value = foundUser.empno;
 
-        startTimer(); // ✅ START TIMER
+        startTimer();
     } else {
         alert("Employee not found!");
     }
 }
 
+// ✅ HIWALAY NA FUNCTION
+function openRanking(){
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("rankingPage").style.display = "block";
+
+    viewRanking();
+}
+
 // ✅ SUBMIT (FINAL SAFE VERSION)
 function submitExam(){
+
 
 let q1=document.querySelector('input[name="q1"]:checked')?.value || "";
 let q2=document.querySelector('input[name="q2"]:checked')?.value || "";
 let q3=document.querySelector('input[name="q3"]:checked')?.value || "";
+let q4=document.querySelector('input[name="q4"]:checked')?.value || "";
+let q5=document.querySelector('input[name="q5"]:checked')?.value || "";
 
 let score=0;
 if(q1==="B") score++;
 if(q2==="A") score++;
 if(q3==="A") score++;
+if(q4==="A") score++;
+if(q5==="D") score++;
 
-let percent=(score/3)*100;
+
+
+let percent=(score/5)*100;
 let status=percent>=75?"PASSED ✅":"FAILED ❌";
 
 let empno=document.getElementById("empno").value;
 let name=document.getElementById("fullname").value;
 
-let list=JSON.parse(localStorage.getItem("data"))||[];
 
-// ✅ GET USER ATTEMPTS
-let userAttempts=list.filter(x=>x.empno===empno);
+let list = JSON.parse(localStorage.getItem("data")) || [];
 
-// ✅ LIMIT 3 ATTEMPTS + 24H RESET
-if(userAttempts.length>=3){
+let userAttempts = list.filter(x => x.empno === empno);
 
-let last=userAttempts[userAttempts.length-1];
+// ✅ LIMIT 3 ATTEMPTS + 24 HOURS
+if(userAttempts.length >= 3){
 
-let now=new Date();
-let lastDate=new Date(last.date);
+    let last = userAttempts[userAttempts.length - 1];
 
-let diff=(now-lastDate)/(1000*60*60);
+    let now = new Date();
+    let lastDate = new Date(last.date);
 
-if(diff<24){
-alert("⛔ Max 3 attempts. Try after 24 hours.");
-return;
-}else{
-list=list.filter(x=>x.empno!==empno);
+    let diff = (now - lastDate) / (1000 * 60 * 60);
+
+    if(diff < 24){
+        alert("⛔ Maximum 3 attempts only. Try again after 24 hours.");
+        return;  // ✅ STOP SUBMIT
+    } else {
+        // ✅ reset attempts after 24 hrs
+        list = list.filter(x => x.empno !== empno);
+    }
 }
-}
 
-// ✅ ATTEMPT COUNT
-let count=list.filter(x=>x.empno===empno).length+1;
+let count = list.filter(x => x.empno === empno).length + 1;
 
-let attempt="";
-if(count===1) attempt="First Take";
-else if(count===2) attempt="Second Take";
-else attempt="Third Take";
+let attempt = "";
+if(count === 1) attempt = "First Take";
+else if(count === 2) attempt = "Second Take";
+else attempt = "Third Take";
 
-// ✅ SAVE
+
 let now = new Date();
 let formattedDate = now.toLocaleString();
 
+
 list.push({
-empno,name,score,
-percent:percent.toFixed(2),
-status,attempt,
-q1,q2,q3,
-date: formattedDate
+    empno,name,score,
+    percent: percent.toFixed(2),
+    status,attempt,
+    q1,q2,q3,q4,q5,
+    date: formattedDate
 });
 
-localStorage.setItem("data",JSON.stringify(list));
+localStorage.setItem("data", JSON.stringify(list));
+
 
 // ✅ SHOW RESULT
 document.getElementById("result").innerHTML=
-"Score: "+score+"/3<br>"+
+"Score: "+score+"/5<br>"+
 "Percentage: "+percent.toFixed(2)+"%<br>"+
 "Status: "+status;
 
+clearInterval(timerInterval);  // ✅ STOP TIMER
+
 alert("✅ Saved!");
+
+
+// ✅ DISABLE ALL ANSWERS
+document.querySelectorAll("input[type=radio]").forEach(r => r.disabled = true);
+
+}
+
+
+function logout(){
+
+    
+    clearTimeout(logoutTimer);  // ✅ STOP TIMER
+    clearInterval(timerInterval); 
+    
+    // ✅ RESET TIMER
+    time = 60;
+    warningGiven = false;
+
+    document.getElementById("examPage").style.display="none";
+    document.getElementById("loginPage").style.display="block";
+
+    document.getElementById("empnoLogin").value="";
+    document.getElementById("empno").value="";
+    document.getElementById("fullname").value="";
+
+    // ✅ RESET ANSWERS
+    document.querySelectorAll("input[type=radio]").forEach(r => {
+        r.checked = false;
+        r.disabled = false;
+    });
+
+    // ✅ CLEAR RESULT DISPLAY
+    document.getElementById("result").innerHTML = "";
+}
+
+function retakeExam(){
+
+    clearInterval(timerInterval);
+    clearTimeout(logoutTimer);
+
+    time = 60;
+    warningGiven = false;
+
+    document.querySelectorAll("input[type=radio]").forEach(r => {
+        r.checked = false;
+        r.disabled = false;
+    });
+
+    document.getElementById("result").innerHTML = "";
+    document.getElementById("timer").innerText = "Time Left: 01:00";
+    document.getElementById("timer").style.color = "black";
+
+    startTimer();
 }
 
 // ✅ VIEW RESULT (WITH QUESTIONNAIRE)
@@ -270,25 +456,43 @@ alert("No result!");
 return;
 }
 
-let q1a=r.q1==="A"?"(✓) Quality Analysis":"( ) Quality Analysis";
-let q1b=r.q1==="B"?"(✓) Quality Assurance":"( ) Quality Assurance";
+let q1a=r.q1==="A"?"(✓) Process Engineering Evaluation & Control":"( ) Process Engineering Evaluation & Control";
+let q1b=r.q1==="B"?"(✓) Product Engineering and External Communication":"( ) Product Engineering and External Communication";
+let q1c=r.q1==="C"?"(✓) Process Engineering and Efficiency Communication":"( ) Process Engineering and Efficiency Communication";
+let q1d=r.q1==="D"?"(✓) Process Engineering and External Communication":"( ) Process Engineering and External Communication";
 
-let q2a=r.q2==="A"?"(✓) Excel":"( ) Excel";
-let q2b=r.q2==="B"?"(✓) Paint":"( ) Paint";
+let q2a=r.q2==="A"?"(✓) Key Performance Indicator":"( ) Key Performance Indicator";
+let q2b=r.q2==="B"?"(✓) Key Process Indicator":"( ) Key Process Indicator";
+let q2c=r.q2==="C"?"(✓) Key Productivity Indicator":"( ) Key Productivity Indicator";
+let q2d=r.q2==="D"?"(✓) Key Performance Index":"( ) Key Performance Index";
 
-let q3a=r.q3==="A"?"(✓) SOP":"( ) SOP";
-let q3b=r.q3==="B"?"(✓) System Output Plan":"( ) System Output Plan";
+
+let q3a=r.q3==="A"?"(✓) Magnetics Business Group":"( ) Magnetics Business Group";
+let q3b=r.q3==="B"?"(✓) Manufacturing Business Group":"( ) Manufacturing Business Group";
+let q3c=r.q3==="C"?"(✓) Management Business Group":"( ) Management Business Group";
+let q3d=r.q3==="D"?"(✓) Marketing Business Group":"( ) Marketing Business Group";
+
+let q4a=r.q4==="A"?"(✓) Process Change Notice":"( ) Process Change Notice";
+let q4b=r.q4==="B"?"(✓) Product Change Notice":"( ) Product Change Notice";
+let q4c=r.q4==="C"?"(✓) Process Control Notice":"( ) Process Control Notice";
+let q4d=r.q4==="D"?"(✓) Production Control Notice":"( ) Production Control Notice";
+
+let q5a=r.q5==="A"?"(✓) ASAP":"( ) ASAP";
+let q5b=r.q5==="B"?"(✓) Today":"( ) Today";
+let q5c=r.q5==="C"?"(✓) Kahapon pa dapat":"( ) Kahapon pa dapat";
+let q5d=r.q5==="D"?"(✓) Depende sa mood ni Sir Clark":"( ) Depende sa mood ni Sir Clark";
 
 let content=
 "Employee No,"+r.empno+"\n"+
 "Name,"+r.name+"\n"+
-"Score,'"+r.score+"/3\n"+
+"Score,'"+r.score+"/5\n"+
 "Percent,"+r.percent+"%\n"+
 "Status,"+r.status+"\n\n"+
-"1. QA\n"+q1a+"\n"+q1b+"\n\n"+
-"2. Tool\n"+q2a+"\n"+q2b+"\n\n"+
-"3. SOP\n"+q3a+"\n"+q3b;
-
+"1. Product Engineering and External Communication\n"+q1a+"\n"+q1b+"\n"+q1c+"\n"+q1d+"\n\n"+
+"2. Key Performance Indicator\n"+q2a+"\n"+q2b+"\n"+q1c+"\n"+q1d+"\n\n"+
+"3. Magnetics Business Group\n"+q3a+"\n"+q3b+"\n"+q1c+"\n"+q1d+"\n\n"+
+"4. Standard Operating Procedure\n"+q4a+"\n"+q4b+"\n"+q1c+"\n"+q1d+"\n\n"+
+"5. Depende sa mood ni Sir Clark\n"+q5a+"\n"+q5b+"\n"+q5c+"\n"+q5d;
 let blob=new Blob(["\uFEFF"+content]);
 let url=URL.createObjectURL(blob);
 
@@ -301,7 +505,23 @@ a.click();
 // ✅ RANKING
 function viewRanking(){
 
-let list=JSON.parse(localStorage.getItem("data"))||[];
+
+let raw = JSON.parse(localStorage.getItem("data")) || [];
+
+let grouped = {};
+
+raw.forEach(r => {
+    if(!grouped[r.empno]){
+        grouped[r.empno] = {
+            empno: r.empno,
+            name: r.name,
+            takes: []
+        };
+    }
+    grouped[r.empno].takes.push(r);
+});
+
+let list = Object.values(grouped);
 
 if(list.length===0){
 alert("No data!");
@@ -310,31 +530,132 @@ return;
 
 let t=document.getElementById("rankingTable");
 
-t.innerHTML=
-"<tr><th>Rank</th><th>EmpNo</th><th>Name</th><th>Score</th><th>%</th><th>Attempt</th><th>Status</th><th>Date</th></tr>";
-list.sort((a,b)=>b.score-a.score);
+t.innerHTML = `
+<tr>
+<th>Rank</th>
+<th>EmpNo</th>
+<th>Name</th>
+<th>Best Score</th>
+<th>Attempts</th>
+</tr>
+`;
 
-list.forEach((r,i)=>{
-let row=t.insertRow();
-
-row.insertCell(0).innerText=i+1;
-row.insertCell(1).innerText=r.empno;
-row.insertCell(2).innerText=r.name;
-row.insertCell(3).innerText=r.score+"/3";
-row.insertCell(4).innerText=r.percent+"%";
-row.insertCell(5).innerText=r.attempt;
-row.insertCell(6).innerText=r.status;
-row.insertCell(7).innerText = r.date;
+list.sort((a,b)=>{
+    let aLast = a.takes[a.takes.length - 1];
+    let bLast = b.takes[b.takes.length - 1];
+    return bLast.score - aLast.score;
 });
+
+
+
+list.forEach((u,i)=>{
+
+    let best = Math.max(
+        ...(u.takes.map(t => parseFloat(t.percent)))
+    );let max = Math.max(...u.takes.map(t => parseFloat(t.percent)));
+
+let summary = `<div style="
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    justify-content:flex-start;
+">`;
+
+u.takes.slice(-3).forEach((t, index) => {
+   
+summary += `
+<div style="
+
+    border-radius:10px;
+    padding:8px;
+    min-width:50px;
+
+    background: ${parseFloat(t.percent) === max ? "#fff3cd" : "#f9f9f9"};
+    border: ${parseFloat(t.percent) === max ? "2px solid gold" : "1px solid #ccc"};
+">
+        <div style="font-size:10px; color:#666;">
+            Attempt ${index+1}
+        </div>
+
+        
+        <div style="font-size:14px; font-weight:bold; color:#2c7a7b;">
+    ${t.score}/5
+        </div>
+
+        <div style="font-size:10px; color:#555;">
+    ${t.percent}%
+        </div>
+
+        <div style="
+            font-size:12px;
+            color: ${t.status.includes("PASS") ? "green" : "red"};
+        ">
+            ${t.status}
+        </div>
+
+        <div style="font-size:10px; color:#888;">
+            ${t.date}
+        </div>
+    </div>
+    `;
+});
+
+summary += "</div>";
+
+    let row = t.insertRow();
+
+    
+// ✅ TOP 1 HIGHLIGHT
+if(i === 0){
+    row.style.background = "#fff8e1";
+    row.style.fontWeight = "bold";
+}
+
+
+    row.insertCell(0).innerText = i+1;
+    row.insertCell(1).innerText = u.empno;
+    row.insertCell(2).innerText = u.name;
+    
+    row.insertCell(3).innerHTML = `
+<span style="
+    font-size:20px;
+    font-weight:bold;
+    color:green;
+">
+    ${best}%
+</span>
+`;
+    row.insertCell(4).innerHTML = summary;
+});
+
 
 document.getElementById("examPage").style.display="none";
 document.getElementById("rankingPage").style.display="block";
 }
 
 // BACK
+
 function back(){
-document.getElementById("rankingPage").style.display="none";
-document.getElementById("examPage").style.display="block";
+    document.getElementById("rankingPage").style.display="none";
+    document.getElementById("loginPage").style.display="block";
+}
+
+
+function resetRanking(){
+
+    if(confirm("Are you sure you want to delete all ranking data?")){
+        
+        localStorage.removeItem("data");
+
+        alert("✅ Ranking reset successful!");
+
+        // optional: refresh ranking page
+        document.getElementById("rankingTable").innerHTML = "";
+
+        // balik sa login
+        back();
+    }
+
 }
 
 </script>
